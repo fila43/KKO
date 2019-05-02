@@ -1,16 +1,6 @@
 #include "kko.h"
 
 
-
-
-
-/*
-bool generate_histogram(std::vector<uint8_t >&buffer, std::vector<mapItem> &histogram);
-bool set_keys(std::vector<mapItem> & histogram);
-
-*/
-
-
 int main(int argc, char * argv[])
 {
 
@@ -74,8 +64,8 @@ int main(int argc, char * argv[])
             case 'o':
                 outputFile = std::string(optarg);
                 break;
-            case 'W':
-                width = std::stoi(optarg);
+            case 'w':
+               // width = std::stoi(optarg);
                 break;
             case '?': // Unrecognized option
             default:
@@ -105,42 +95,43 @@ int main(int argc, char * argv[])
     HTree huff = HTree(buffer);
 
 
-    if (mode == 1){                             //compress
+    if (mode == 1){                     //compress
+     //   std::cout<<inputFile;
+        if (model){                         //model
+            huff.applyModel();
+        }
         if (method == 1){                       //static
-            if (model){                         //model
-
-            }
 
             huff.runStaticCompress(outputFile);
         } else if (method == 0){                //adaptive
-            if (model){
+                if (model){
+                    huff.runAdaptiveCompress(outputFile,huff.applyModel(buffer));
 
-            }
-            huff.runAdaptiveCompress(outputFile,buffer);
+                } else{
+                    huff.runAdaptiveCompress(outputFile,buffer);
+
+                }
         } else{                                 //arg error
 
         }
-    } else if(mode == 0){   //decompress
+    } else if(mode == 0){                          //decompress
+        if (model)
+            huff.setModel(true);
         if (method == 1){                       //static
-            if (model){
 
-            }
             huff.runStaticDeCompress(outputFile);
 
         } else if (method == 0){                //adaptive
-            if (model){
 
-            }
             huff.runAdaptiveDeCompress(outputFile);
 
         } else{                                 //arg error
-
+            std::cerr<<"arg error\n";
         }
     } else{                 //error in arguments
-
+        std::cerr<<"arg error\n";
     }
 
-    width =width;
     return 1;
 
 
